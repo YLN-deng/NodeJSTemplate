@@ -11,8 +11,8 @@ class BlacklistManager {
 
   // 私有构造函数，确保只能通过 getInstance 方法获取实例
   private constructor() {
-    this.memcachedClient = memjs.Client.create("127.0.0.1:11211"); // 连接到本地的 Memcached 服务器
-    this.whitelistRoutes = ['/users/login']; // 定义白名单路由
+    this.memcachedClient = memjs.Client.create(process.env.NODE_MEMCACHED); // 连接到本地的 Memcached 服务器
+    this.whitelistRoutes = [process.env.NODE_WHITE_LIST_ROUTES?process.env.NODE_WHITE_LIST_ROUTES:""]; // 定义白名单路由
   }
 
   // 获取 BlacklistManager 类的唯一实例
