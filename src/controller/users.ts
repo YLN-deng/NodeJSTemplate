@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import {blacklistManager} from '@utils/BlacklistManager';
-import ResultAjax from '@common/result/ResultAjax';
+import ResultAjax from '@common/result/BaseResult';
 
 class UserController {
   /**

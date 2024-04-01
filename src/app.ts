@@ -10,6 +10,8 @@ dotenv.config({ path: ".env." + process.env.NODE_ENV });
 
 const app = express();
 
+import ajaxResultMiddleware from '@common/result/AjaxResult';
+
 import indexRouter from './routes/index';
 import usersRouter from './routes/users';
 
@@ -36,6 +38,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 /**
+ * 使用中间件来添加 AjaxResult 方法到响应对象上
+ */
+app.use(ajaxResultMiddleware);
+
+/**
  * JWT 中间件，用于验证 token
  */
 app.use(blacklistManager.authenticateJWT);
@@ -58,7 +65,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   // 设置响应头为 JSON 格式
   res.setHeader('Content-Type', 'application/json');
   // 返回 JSON 错误响应
-  res.status(err.status || 500).json({ code:err.status || 500, error: err.message });
+  res.status(err.status || 500).json({ code:err.status || 500, error: err.message || "系统错误" });
 });
 
 export default app;

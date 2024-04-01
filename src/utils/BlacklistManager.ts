@@ -7,12 +7,10 @@ import { Request, Response, NextFunction } from "express";
 class BlacklistManager {
   private static instance: BlacklistManager;
   private memcachedClient: Client;
-  private whitelistRoutes: string[]; // 添加白名单路由数组
 
   // 私有构造函数，确保只能通过 getInstance 方法获取实例
   private constructor() {
     this.memcachedClient = memjs.Client.create(process.env.NODE_MEMCACHED); // 连接到本地的 Memcached 服务器
-    this.whitelistRoutes = [process.env.NODE_WHITE_LIST_ROUTES?process.env.NODE_WHITE_LIST_ROUTES:""]; // 定义白名单路由
   }
 
   // 获取 BlacklistManager 类的唯一实例
@@ -34,12 +32,12 @@ class BlacklistManager {
     return new Promise<string>((resolve, reject) => {
       jwt.sign(payload, secretKey, { expiresIn }, (err, token) => {
         if (err) {
-          reject(createError(500, "Failed to generate JWT"));
+          reject(createError(500, "生成会话失败"));
         } else {
           if (token) {
             resolve(token);
           } else {
-            reject(createError(500, "Failed to generate JWT"));
+            reject(createError(500, "生成会话失败"));
           }
         }
       });
@@ -58,21 +56,22 @@ class BlacklistManager {
     res: Response,
     next: NextFunction
   ) => {
+    const whitelistRoutes = process.env.NODE_WHITE_LIST_ROUTES ? process.env.NODE_WHITE_LIST_ROUTES.split(',') : ['']; // 定义白名单路由
     // 检查请求的路由是否在白名单中
-    if (this.whitelistRoutes.includes(req.path)) {
+    if (whitelistRoutes.includes(req.path)) {
       return next(); // 如果在白名单中，直接通过中间件
     }
 
     const token = req.headers.authorization; // 从请求头中获取 token
     const secretKey = process.env.NODE_JWTSECRETKEY;
-    if (!secretKey) return next(createError(401, "JWT secret key is not defined")); // 检查密钥是否存在
+    if (!secretKey) return next(createError(401, "会话不存在")); // 检查密钥是否存在
     if (token) {
       // 检查 token 是否在黑名单中
       blacklistManager
         .isTokenRevoked(token)
         .then((revoked) => {
           if (revoked) {
-            return next(createError(401, "Token has been revoked")); // 如果在黑名单中，返回 401 错误
+            return next(createError(401, "会话已失效")); // 如果在黑名单中，返回 401 错误
           } else {
             try {
               // 验证 token 的有效性
@@ -81,18 +80,18 @@ class BlacklistManager {
               next(); // 继续请求处理
             } catch (error) {
               if (error instanceof jwt.TokenExpiredError) {
-                next(createError(401, "JWT has expired")); // JWT已过期 返回 401 错误
+                next(createError(401, "会话已过期")); // JWT已过期 返回 401 错误
               } else {
-                next(createError(401, "Invalid token")); // 如果 token 无效，返回 401 错误
+                next(createError(401, "当前登录无效")); // 如果 token 无效，返回 401 错误
               }
             }
           }
         })
         .catch(() => {
-          next(createError(500, "Internal server error")); // 如果 Memcached 发生错误，返回 500 错误
+          next(createError(500, "系统错误")); // 如果 Memcached 发生错误，返回 500 错误
         });
     } else {
-      next(createError(401, "Token is missing")); // 如果没有提供 token，返回 401 错误
+      next(createError(401, "会话不存在")); // 如果没有提供 token，返回 401 错误
     }
   }
 

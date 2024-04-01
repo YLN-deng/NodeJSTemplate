@@ -24,11 +24,11 @@ class BaseResultCode {
     /**
      * 表示操作成功的返回码和描述
      */
-    public static SUCCESS = new BaseResultCode(200, '成功');
+    public static SUCCESS = new BaseResultCode(200, '请求成功');
     /**
      * 表示操作失败的返回码和描述
      */
-    public static FAILED = new BaseResultCode(500, '失败');
+    public static FAILED = new BaseResultCode(500, '系统错误');
     /**
      * 表示参数校验失败的返回码和描述
      */
@@ -40,7 +40,7 @@ class BaseResultCode {
     /**
      * 表示操作过于频繁的返回码和描述
      */
-    public static API_BUSY = new BaseResultCode(700, '操作过于频繁');
+    public static API_BUSY = new BaseResultCode(439, '操作过于频繁');
 }
 
 export default BaseResultCode;
