@@ -54,6 +54,15 @@ class ResultAjax {
     static bizFail(bizException: any): ResultAjax {
         return new ResultAjax(bizException.code, bizException.msg, null);
     }
+
+    /**
+     * 请求频繁异常
+     * @param limiterException 业务异常
+     * @return ResultAjax
+     */
+    static limiterFail(): ResultAjax {
+        return new ResultAjax(BizResultCode.API_BUSY.code, BizResultCode.API_BUSY.desc, null);
+    }
 }
 
 export default ResultAjax;

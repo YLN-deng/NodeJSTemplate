@@ -3,17 +3,24 @@ import express from 'express';
 import { Request, Response, NextFunction } from 'express';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
-import {blacklistManager} from '@utils/BlacklistManager';
+import requestIp from 'request-ip';
 
 import dotenv from "dotenv";
 dotenv.config({ path: ".env." + process.env.NODE_ENV });
 
 const app = express();
 
+import {blacklistManager} from '@utils/BlacklistManager';
 import ajaxResultMiddleware from '@common/result/AjaxResult';
+import createRateLimiterMiddleware from '@common/rateLimiter/RateLimiter';
 
 import indexRouter from './routes/index';
 import usersRouter from './routes/users';
+
+/**
+ * 获取客户端IP地址的中间件
+ */
+app.use(requestIp.mw());
 
 /**
  * logger('dev') 中间件，它是 Morgan 模块提供的一个预定义日志格式，可以在控制台中打印出请求日志，便于开发时查看请求信息。
@@ -48,6 +55,15 @@ app.use(ajaxResultMiddleware);
 app.use(blacklistManager.authenticateJWT);
 
 /**
+ * 速率限制器中间件
+ */ 
+const rateLimiterMiddleware = createRateLimiterMiddleware({
+  points: 10, // 每秒允许的请求次数
+  duration: 1, // 限流的时间间隔（秒）
+});
+app.use(rateLimiterMiddleware);
+
+/**
  * 路由配置
  */
 app.use('/', indexRouter);
@@ -65,7 +81,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   // 设置响应头为 JSON 格式
   res.setHeader('Content-Type', 'application/json');
   // 返回 JSON 错误响应
-  res.status(err.status || 500).json({ code:err.status || 500, error: err.message || "系统错误" });
+  (res as any).AjaxResult.fail(err.status || 500);
 });
 
 export default app;

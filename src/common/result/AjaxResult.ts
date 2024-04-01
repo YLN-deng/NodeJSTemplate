@@ -14,6 +14,9 @@ const ajaxResultMiddleware = (req: Request, res: Response, next: NextFunction) =
     },
     bizFail: (code: number, data?: any) => {
       return res.status(code).json(BaseResult.bizFail(data));
+    },
+    limiterFail: (code: number) => {
+      return res.status(code).json(BaseResult.limiterFail)
     }
   };
   
