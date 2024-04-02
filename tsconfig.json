@@ -5,7 +5,7 @@
     "emitDeclarationOnly": true,
     "declarationMap": true,
     "target": "es2016",
-    "module": "commonjs",
+    "module": "CommonJS",
     "moduleResolution": "Node",
     "sourceMap": true,
     "esModuleInterop": true,
@@ -20,7 +20,8 @@
       "@controller/*": ["controller/*"],
       "@database/*": ["database/*"],
       "@utils/*": ["utils/*"],
-      "@types/*": ["types/*"]
+      "@types/*": ["types/*"],
+      "@redis/*": ["redis/*"]
     }
   },
   "include": [ 

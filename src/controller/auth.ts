@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import {blacklistManager} from '@utils/BlacklistManager';
+import {blacklistManager} from '@common/BlacklistManager/BlacklistManager';
 import ResultAjax from '@common/result/BaseResult';
 
 class AuthController {
@@ -36,7 +36,6 @@ class AuthController {
    */
   logout = async (req: Request, res: Response) => {
     const token = req.headers.authorization; // 获取 token
-    console.log('token :>> ', token);
     if (token) {
       // 将 token 加入黑名单
       blacklistManager

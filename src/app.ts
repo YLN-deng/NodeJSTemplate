@@ -10,7 +10,7 @@ dotenv.config({ path: ".env." + process.env.NODE_ENV });
 
 const app = express();
 
-import {blacklistManager} from '@utils/BlacklistManager';
+import {blacklistManager} from '@common/BlacklistManager/BlacklistManager';
 import ajaxResultMiddleware from '@common/result/AjaxResult';
 import createRateLimiterMiddleware from '@common/rateLimiter/RateLimiter';
 
@@ -59,7 +59,7 @@ app.use(blacklistManager.authenticateJWT);
  */ 
 const rateLimiterMiddleware = createRateLimiterMiddleware({
   points: 10, // 每秒允许的请求次数
-  duration: 2, // 限流的时间间隔（秒）
+  duration: 5, // 限流的时间间隔（秒）
 });
 app.use(rateLimiterMiddleware);
 

@@ -1,9 +1,9 @@
 import createError from "http-errors";
-import Redis from 'ioredis';
 import { RateLimiterRedis } from 'rate-limiter-flexible';
 import requestIp from 'request-ip';
 import { Request, Response, NextFunction } from 'express';
 import logger from '@utils/logger';
+import { redisInstance } from '@redis/redis';
 
 // 定义限流器选项的接口
 interface RateLimiterOptions {
@@ -15,11 +15,9 @@ interface RateLimiterOptions {
 const createRateLimiterMiddleware = (options: RateLimiterOptions) => {
   // 从选项中获取点数和时长
   const { points, duration } = options;
-  // 创建一个新的 Redis 客户端实例
-  const redisClient = new Redis({ enableOfflineQueue: false });
   // 使用 Redis 客户端创建一个 RateLimiterRedis 实例
   const rateLimiterRedis = new RateLimiterRedis({
-    storeClient: redisClient,
+    storeClient: redisInstance.redisClient,
     points,     // 每秒允许的请求次数
     duration,   // 限流的时间间隔（秒）
   });
