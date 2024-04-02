@@ -12,11 +12,8 @@ const ajaxResultMiddleware = (req: Request, res: Response, next: NextFunction) =
     validateFailed: (code: number, data?: any) => {
       return res.status(code).json(BaseResult.validateFailed(data));
     },
-    bizFail: (code: number, data?: any) => {
-      return res.status(code).json(BaseResult.bizFail(data));
-    },
-    limiterFail: (code: number) => {
-      return res.status(code).json(BaseResult.limiterFail)
+    bizFail: (code: number, msg?: any) => {
+      return res.status(code).json(BaseResult.bizFail({code,msg}));
     }
   };
   

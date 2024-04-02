@@ -15,7 +15,7 @@ import ajaxResultMiddleware from '@common/result/AjaxResult';
 import createRateLimiterMiddleware from '@common/rateLimiter/RateLimiter';
 
 import indexRouter from './routes/index';
-import usersRouter from './routes/users';
+import authRouter from './routes/auth';
 
 /**
  * 获取客户端IP地址的中间件
@@ -59,7 +59,7 @@ app.use(blacklistManager.authenticateJWT);
  */ 
 const rateLimiterMiddleware = createRateLimiterMiddleware({
   points: 10, // 每秒允许的请求次数
-  duration: 1, // 限流的时间间隔（秒）
+  duration: 2, // 限流的时间间隔（秒）
 });
 app.use(rateLimiterMiddleware);
 
@@ -67,13 +67,13 @@ app.use(rateLimiterMiddleware);
  * 路由配置
  */
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/auth', authRouter);
 
 /**
  * 捕获 404 错误对象
  */
 app.use((req:Request, res:Response, next:NextFunction) => {
-  next(createError(404));
+  next(createError(404, "请求地址无效"));
 });
 
 // 错误处理中间件
@@ -81,7 +81,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   // 设置响应头为 JSON 格式
   res.setHeader('Content-Type', 'application/json');
   // 返回 JSON 错误响应
-  (res as any).AjaxResult.fail(err.status || 500);
+  (res as any).AjaxResult.bizFail(err.status || 500, err.message || "系统错误");
 });
 
 export default app;

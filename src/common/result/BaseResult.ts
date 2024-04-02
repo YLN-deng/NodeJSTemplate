@@ -3,7 +3,7 @@ import BizResultCode from './BaseResultCode';
 class ResultAjax {
     code: number; // 返回code
     msg: string; // 返回消息
-    data: any; // 返回数据
+    data?: any; // 返回数据
     time: number; // 返回时间
 
     /**
@@ -12,7 +12,7 @@ class ResultAjax {
      * @param msg 返回消息
      * @param data 返回具体对象
      */
-    constructor(code: number, msg: string, data: any) {
+    constructor(code: number, msg: string, data?: any) {
         this.code = code;
         this.msg = msg;
         this.data = data;
@@ -52,16 +52,7 @@ class ResultAjax {
      * @return ResultAjax
      */
     static bizFail(bizException: any): ResultAjax {
-        return new ResultAjax(bizException.code, bizException.msg, null);
-    }
-
-    /**
-     * 请求频繁异常
-     * @param limiterException 业务异常
-     * @return ResultAjax
-     */
-    static limiterFail(): ResultAjax {
-        return new ResultAjax(BizResultCode.API_BUSY.code, BizResultCode.API_BUSY.desc, null);
+        return new ResultAjax(bizException.code, bizException.msg);
     }
 }
 

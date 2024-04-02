@@ -1,3 +1,4 @@
+import createError from "http-errors";
 import Redis from 'ioredis';
 import { RateLimiterRedis } from 'rate-limiter-flexible';
 import requestIp from 'request-ip';
@@ -32,15 +33,15 @@ const createRateLimiterMiddleware = (options: RateLimiterOptions) => {
       await rateLimiterRedis.consume(clientIp);
       // 如果未触发限流，继续执行下一个中间件
       next();
-    } catch (error) {
+    } catch (error:any) {
       // 处理限流器错误
-      if (error instanceof Error && error.message === 'Error: RateLimitError') {
+      if (error.remainingPoints === 0) {
         // 如果触发了限流，返回状态码 429 和错误信息
-        (res as any).AjaxResult.limiterFail(429);
+        next(createError(429,"操作过于频繁"))
       } else {
         // 如果是其他类型的错误，返回状态码 500 和错误信息
         logger.error('Rate limiter middleware error:', error);
-        (res as any).AjaxResult.fail(500);
+        next(createError(500,"系统错误"))
       }
     }
   };

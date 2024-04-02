@@ -82,7 +82,7 @@ class BlacklistManager {
               if (error instanceof jwt.TokenExpiredError) {
                 next(createError(401, "会话已过期")); // JWT已过期 返回 401 错误
               } else {
-                next(createError(401, "当前登录无效")); // 如果 token 无效，返回 401 错误
+                next(createError(401, "当前会话无效")); // 如果 token 无效，返回 401 错误
               }
             }
           }

@@ -37,10 +37,6 @@ class BaseResultCode {
      * 表示接口不存在的返回码和描述
      */
     public static API_NOT_FOUND = new BaseResultCode(404, '接口不存在');
-    /**
-     * 表示操作过于频繁的返回码和描述
-     */
-    public static API_BUSY = new BaseResultCode(439, '操作过于频繁');
 }
 
 export default BaseResultCode;
