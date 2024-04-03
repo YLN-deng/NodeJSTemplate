@@ -66,7 +66,7 @@ const loginRoute = async (req:Request, res:Response) => {
     (res as any).AjaxResult.bizFail(429,"请求过多");
   } else {
     const user = authorise(req.body.email, req.body.password); // should be implemented in your project
-    if (!user.isLoggedIn) {
+    if (!user.isLoggedIn) {//用户账号密码错误
       // 错误尝试时从限制器中消耗 1 点，如果达到限制则阻止
       try {
         const promises = [limiterSlowBruteByIP.consume(ipAddr)];
@@ -75,9 +75,9 @@ const loginRoute = async (req:Request, res:Response) => {
           promises.push(limiterConsecutiveFailsByUsernameAndIP.consume(usernameIPkey));
         }
 
-        await Promise.all(promises);
+        await Promise.all(promises); // 执行promises
 
-        res.status(400).end('电子邮件或密码错误');
+        (res as any).AjaxResult.bizFail(400,"电子邮件或密码错误"); 
       } catch (rlRejected:any) {
         if (rlRejected instanceof Error) {
           logger.error("登录守护抛出异常：",rlRejected);

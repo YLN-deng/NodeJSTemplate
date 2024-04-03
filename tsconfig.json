@@ -1,24 +1,46 @@
 {
   "compilerOptions": {
+    // 允许编译 JavaScript 文件
     "allowJs": true,
+    // 生成声明文件（.d.ts）
     "declaration": true,
-    "emitDeclarationOnly": true,
+    // 生成声明映射文件（.d.ts.map）
     "declarationMap": true,
-    "target": "es2016",
+    // 目标 ECMAScript 版本
+    "target": "ES2016",
+    // 模块系统
     "module": "CommonJS",
+    // 模块解析策略
     "moduleResolution": "Node",
+    // 生成源映射文件
     "sourceMap": true,
+    // 启用 ES 模块间的互操作性
     "esModuleInterop": true,
+    // 仅生成声明文件，不生成实际代码
+    "emitDeclarationOnly": true,
+    // 启用装饰器的实验性特性
+    "experimentalDecorators": true,
+    // 在元数据中使用装饰器信息
+    "emitDecoratorMetadata": true,
+    // 强制文件名使用一致的大小写
     "forceConsistentCasingInFileNames": true,
+    // 允许合成默认导入
     "allowSyntheticDefaultImports": true,
+    // 启用严格模式检查
     "strict": true,
+    // 跳过库文件的类型检查
     "skipLibCheck": true,
+    // 输出目录
     "outDir": "./dist",
+    // 基础路径
     "baseUrl": "./src",
+    // 路径别名映射
     "paths": {
       "@common/*": ["common/*"],
       "@controller/*": ["controller/*"],
       "@database/*": ["database/*"],
+      "@models/*": ["models/*"],
+      "@schema/*": ["schema/*"],
       "@utils/*": ["utils/*"],
       "@types/*": ["types/*"],
       "@redis/*": ["redis/*"]
@@ -26,7 +48,7 @@
   },
   "include": [ 
     "**/*.ts",
-    "**/*.d.ts",
+    "**/*.d.ts"
   ],
   "exclude": [ "copyStatic.ts" ]
 }

@@ -16,6 +16,7 @@ import createRateLimiterMiddleware from '@common/rateLimiter/RateLimiter';
 
 import indexRouter from './routes/index';
 import authRouter from './routes/auth';
+import usersRouter from './routes/users';
 
 /**
  * 获取客户端IP地址的中间件
@@ -68,6 +69,7 @@ app.use(rateLimiterMiddleware);
  */
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
+app.use('/users',usersRouter);
 
 /**
  * 捕获 404 错误对象

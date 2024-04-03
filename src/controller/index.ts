@@ -1,13 +1,11 @@
-import { Request, Response } from "express";
-import requestIp from 'request-ip';
+import { Request, Response } from "express"
+import logger from "@utils/logger";
 
 class IndexController {
 	// 测试
 	test = async (req: Request, res: Response) => {
+		//获取解析的token信息
 		console.log('req :>> ', (req as any).user);
-		const clientIp = requestIp.getClientIp(req) || '';
-		console.log('clientIp :>> ', clientIp);
-		(res as any).AjaxResult.success(200,req.headers);
 	};
 }
 
