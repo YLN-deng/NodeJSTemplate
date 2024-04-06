@@ -4,6 +4,7 @@ import { Request, Response, NextFunction } from 'express';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import requestIp from 'request-ip';
+import bodyParser from 'body-parser';
 
 import dotenv from "dotenv";
 dotenv.config({ path: ".env." + process.env.NODE_ENV });
@@ -38,6 +39,11 @@ app.use(express.json({ limit: '300kb' }));
  * 配置 Express 应用程序使用内置中间件来解析 URL 编码的请求体数据
  */
 app.use(express.urlencoded({ extended: false }));
+
+/**
+ *  解析body请求体数据
+ */
+app.use(bodyParser.json({ limit: '300kb' }));
 
 
 /**

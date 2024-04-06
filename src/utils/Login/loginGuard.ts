@@ -1,4 +1,5 @@
-import { Request, Response } from 'express';
+import createError from "http-errors";
+import { Request, Response, NextFunction } from 'express';
 import { RateLimiterRedis } from 'rate-limiter-flexible';
 import { redisInstance } from '@redis/redis';
 import requestIp from 'request-ip';
@@ -34,9 +35,9 @@ const limiterConsecutiveFailsByUsernameAndIP = new RateLimiterRedis({
  */
 const getUsernameIPkey = (username:string, ip:string) => `${username}_${ip}`;
 
-const loginRoute = async (req:Request, res:Response) => {
+const loginRoute = async (req:Request, res:Response,next:NextFunction) => {
   const ipAddr = requestIp.getClientIp(req) || ''; //获取客户端的 IP 地址
-  const usernameIPkey = getUsernameIPkey(req.body.email, ipAddr); //生成一个唯一的键值
+  const usernameIPkey = getUsernameIPkey(req.body.account, ipAddr); //生成一个唯一的键值
 
   /**
    * @resUsernameAndIP 获取与用户名和 IP 地址相关的失败次数
@@ -63,9 +64,9 @@ const loginRoute = async (req:Request, res:Response) => {
   // retrySecs大于 0，限流或阻止请求
   if (retrySecs > 0) {
     res.set('Retry-After', String(retrySecs));
-    (res as any).AjaxResult.bizFail(429,"请求过多");
+    return next(createError(429,"请求过多"));
   } else {
-    const user = authorise(req.body.email, req.body.password); // should be implemented in your project
+    const user = authorise(req.body.account, req.body.password); // should be implemented in your project
     if (!user.isLoggedIn) {//用户账号密码错误
       // 错误尝试时从限制器中消耗 1 点，如果达到限制则阻止
       try {
@@ -77,14 +78,14 @@ const loginRoute = async (req:Request, res:Response) => {
 
         await Promise.all(promises); // 执行promises
 
-        (res as any).AjaxResult.bizFail(400,"电子邮件或密码错误"); 
+        return next(createError(400,"电子邮件或密码错误"));
       } catch (rlRejected:any) {
         if (rlRejected instanceof Error) {
           logger.error("登录守护抛出异常：",rlRejected);
           throw rlRejected;
         } else {
           res.set('Retry-After', String(Math.round(rlRejected.msBeforeNext / 1000)) || '1');
-          (res as any).AjaxResult.bizFail(429,"请求过多");
+          return next(createError(429,"请求过多"));
         }
       }
     }

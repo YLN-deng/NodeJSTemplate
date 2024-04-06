@@ -19,14 +19,17 @@ class AuthController {
    * @returns 
    */ 
   login = async (req: Request, res: Response) => {
-    const secretKey = process.env.NODE_JWTSECRETKEY;
-    if(!secretKey) return res.status(400).json(ResultAjax.fail("登录失败"));
-    const user = {
-      id:1,
-      name:"test"
-    }
-    const token = await blacklistManager.generateJWT(user,secretKey,'1h')
-    res.status(200).json(ResultAjax.success(token));
+    console.log('req.body :>> ', req.body);
+    (res as any).AjaxResult.success(200,req.body);
+
+    // const secretKey = process.env.NODE_JWTSECRETKEY;
+    // if(!secretKey) return res.status(400).json(ResultAjax.fail("登录失败"));
+    // const user = {
+    //   id:1,
+    //   name:"test"
+    // }
+    // const token = await blacklistManager.generateJWT(user,secretKey,'1h')
+    // res.status(200).json(ResultAjax.success(token));
   };
 
   /**
