@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router();
 
-import { authController } from '@controller/auth';
+import { authController } from '@controller/auth/auth';
 
 // 导入需要的验证规则对象
 import { LoginVerificationCredentials } from '@schema/auth/auth';

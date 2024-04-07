@@ -1,6 +1,7 @@
-import { Request, Response } from "express";
-import {blacklistManager} from '@common/BlacklistManager/BlacklistManager';
-import ResultAjax from '@common/result/BaseResult';
+import { Request, Response, NextFunction } from 'express';
+import { blacklistManager } from '@common/BlacklistManager/BlacklistManager';
+
+import { loginRoute } from '@common/LimiterMiddleware/LoginLimiter';
 
 class AuthController {
   /**
@@ -9,7 +10,9 @@ class AuthController {
    * @param res 
    */ 
   register = async (req: Request, res: Response) => {
-    // ...内部的具体注册逻辑
+    console.log('(req as any).user :>> ', (req as any).user);
+    const user = (req as any).user;
+    (res as any).AjaxResult.success(200,user);
   };
 
   /**
@@ -18,18 +21,12 @@ class AuthController {
    * @param res 
    * @returns 
    */ 
-  login = async (req: Request, res: Response) => {
-    console.log('req.body :>> ', req.body);
-    (res as any).AjaxResult.success(200,req.body);
-
-    // const secretKey = process.env.NODE_JWTSECRETKEY;
-    // if(!secretKey) return res.status(400).json(ResultAjax.fail("登录失败"));
-    // const user = {
-    //   id:1,
-    //   name:"test"
-    // }
-    // const token = await blacklistManager.generateJWT(user,secretKey,'1h')
-    // res.status(200).json(ResultAjax.success(token));
+  login = async (req: Request, res: Response,next: NextFunction) => {
+    try {
+      await loginRoute(req,res,next);
+    } catch (err) {
+      (res as any).AjaxResult.fail(500);
+    }
   };
 
   /**

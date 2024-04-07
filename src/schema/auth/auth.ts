@@ -19,7 +19,7 @@ const formatValidationError = (error: ValidationError) => {
   } else {
     return {
       code: 400,
-      msg: 'Validation error',
+      msg: '填写信息有误',
       time: Date.now(),
       field: error.property
     };
@@ -30,6 +30,10 @@ const formatValidationError = (error: ValidationError) => {
 export const LoginVerificationCredentials = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { account, password } = req.body;
+
+    if (!account || !password) {
+      return next(createError(400, '账号或密码不能为空'));
+    }
 
     let authData: any;
     // 判断传入的账号字段是否包含 @ 符号，如果包含则使用邮箱验证，否则使用账号验证
@@ -53,7 +57,7 @@ export const LoginVerificationCredentials = async (req: Request, res: Response, 
 
     next();
   } catch (error) {
-    logger.error('凭证验证期间出错：', error);
+    logger.error('账号密码验证期间出错：', error);
     return next(createError(500, "系统错误"));
   }
 };

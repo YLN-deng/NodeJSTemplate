@@ -12,7 +12,7 @@ interface RateLimiterOptions {
 }
 
 // 创建并返回限流器中间件的函数
-const createRateLimiterMiddleware = (options: RateLimiterOptions) => {
+const IpLimiterMiddleware = (options: RateLimiterOptions) => {
   // 从选项中获取点数和时长
   const { points, duration } = options;
   // 使用 Redis 客户端创建一个 RateLimiterRedis 实例
@@ -45,5 +45,5 @@ const createRateLimiterMiddleware = (options: RateLimiterOptions) => {
   };
 };
 
-// 导出创建限流器中间件的函数
-export default createRateLimiterMiddleware;
+// 导出IP限流器中间件的函数
+export default IpLimiterMiddleware;

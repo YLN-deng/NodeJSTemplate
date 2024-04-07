@@ -31,7 +31,6 @@ class UsersController {
   getUserID = async (req: Request, res: Response) => {
     try {
       const id: number = parseInt(req.params.id); // 对 req.params.id 进行类型断言
-      console.log('id :>> ', id);
       if (!id || isNaN(id)) {
         (res as any).AjaxResult.validateFailed(400);
       }
