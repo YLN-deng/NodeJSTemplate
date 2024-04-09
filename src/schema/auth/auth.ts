@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import logger from '@utils/logger';
 import { validate, ValidationError } from 'class-validator';
 
-import {AuthAccount, AuthEmail} from './verification';
+import {AuthAccount, AuthEmail, RegisterEmail} from './verification';
 
 // 将单个 class-validator 错误对象转换为自定义格式的函数
 const formatValidationError = (error: ValidationError) => {
@@ -31,10 +31,6 @@ export const LoginVerificationCredentials = async (req: Request, res: Response, 
   try {
     const { account, password } = req.body;
 
-    if (!account || !password) {
-      return next(createError(400, '账号或密码不能为空'));
-    }
-
     let authData: any;
     // 判断传入的账号字段是否包含 @ 符号，如果包含则使用邮箱验证，否则使用账号验证
     if (account.includes('@')) {
@@ -55,9 +51,40 @@ export const LoginVerificationCredentials = async (req: Request, res: Response, 
       return next(createError(400, formattedError.msg));
     }
 
-    next();
+    return next();
   } catch (error) {
     logger.error('账号密码验证期间出错：', error);
     return next(createError(500, "系统错误"));
   }
 };
+
+// 账号注册验证中间件
+export const RegisterVerificationCredentials = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const {email, code, password, cf_password} = req.body;
+
+    if (password !== cf_password) {
+      return next(createError(400, '两次密码输入不一致'));
+    }
+
+    // 创建对象，设置对象属性
+    const registerEmail = new RegisterEmail();
+    registerEmail.user_email = email;
+    registerEmail.user_code = code;
+    registerEmail.user_password = password;
+
+    // 验证对象的值是否正确
+    const errors = await validate(registerEmail, { validationError: { target: false } });
+    if(errors.length > 0) {
+      // 将 class-validator 错误对象转换为自定义格式
+      const formattedError = formatValidationError(errors[0]);
+      return next(createError(400, formattedError.msg));
+    }
+
+    // 通过验证，执行下一个任务
+    return next()
+  } catch (error) {
+    logger.error('注册信息验证期间出错：', error);
+    return next(createError(500, "系统错误"));
+  }
+}

@@ -53,7 +53,7 @@ const loginRoute = async (req:Request, res:Response,next:NextFunction) => {
   const [resUsernameAndIP, resSlowByIP] = await Promise.all([
     limiterConsecutiveFailsByUsernameAndIP.get(usernameIPkey),
     limiterSlowBruteByIP.get(ipAddr),
-  ]);;
+  ]);
 
   let retrySecs = 0; //初始化变量retrySecs为0,用于存储重试的秒数
 
@@ -110,7 +110,7 @@ const loginRoute = async (req:Request, res:Response,next:NextFunction) => {
       }
 
       // 返回成功登录信息token
-      (res as any).AjaxResult.success(200,user.token);
+      return (res as any).AjaxResult.success(200,user.token);
     }
   }
 }

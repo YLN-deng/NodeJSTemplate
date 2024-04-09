@@ -30,12 +30,12 @@ const allowedPaths = ['/report', '/data', '/analysis'];
 
 const HttpLimiterMiddleware = (req: Request, res: Response, next: NextFunction) => {
     // 根据情况选择使用用户ID还是IP地址作为速率限制的键
-    const key = (req as any).user.user_id ? (req as any).user.user_id : requestIp.getClientIp(req);
+    const key = (req as any)?.user?.user_id ?? requestIp.getClientIp(req);
 
     // 检查请求路径，根据不同的路径选择不同的速率限制策略
     if (allowedPaths.includes(req.path)) {
          // 如果请求路径以 '/report' 开头，使用报告频率限制器
-        const pointsToConsume = (req as any).user.user_id ? 1 : 5; //如果 req.userId 存在，则消耗 1分。否则，消耗 5分。
+        const pointsToConsume = (req as any)?.user?.user_id ? 1 : 5; //如果 req.userId 存在，则消耗 1分。否则，消耗 5分。
         rateLimiterRedisReports.consume(key, pointsToConsume)
             .then(() => {
                 next(); // 请求通过，继续处理下一个中间件或路由处理程序
@@ -45,7 +45,7 @@ const HttpLimiterMiddleware = (req: Request, res: Response, next: NextFunction) 
             });
     } else {
         // 对于其他路径，使用普通频率限制器
-        const pointsToConsume = (req as any).user.user_id ? 1 : 30; //如果 req.userId 存在，则消耗 1分。否则，消耗 30分。
+        const pointsToConsume = (req as any)?.user?.user_id ? 1 : 30; //如果 req.userId 存在，则消耗 1分。否则，消耗 30分。
         rateLimiterRedis.consume(key, pointsToConsume)
             .then(() => {
                 next();

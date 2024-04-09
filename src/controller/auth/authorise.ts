@@ -2,6 +2,7 @@ import { blacklistManager } from "@common/BlacklistManager/BlacklistManager";
 import { User } from "@models/User";
 import connection from "@database/index";
 import logger from "@utils/logger";
+import {generateHash, comparePassword} from '@utils/bcrypt';
 
 const authorise = async (account: string, password: string) => {
   try {
@@ -12,8 +13,9 @@ const authorise = async (account: string, password: string) => {
     });
 
     if (user) {
-      // 如果找到了用户，可以进行密码验证
-      if (user.user_password === password) {
+      // 如果找到了用户，可以进行密码哈希验证
+      const resultComparePassword = await comparePassword(password,user.user_password);
+      if (resultComparePassword) {
         // 获取token加密和解密的密匙
         const secretKey = process.env.NODE_JWTSECRETKEY;
         // 获取失败返回错误信息
@@ -45,7 +47,7 @@ const authorise = async (account: string, password: string) => {
         return {
           isLoggedIn: false,
           exists: true,
-          message: "账号或密码错误",
+          message: "密码错误",
         };
       }
     } else {

@@ -4,10 +4,13 @@ const router = express.Router();
 import { authController } from '@controller/auth/auth';
 
 // 导入需要的验证规则对象
-import { LoginVerificationCredentials } from '@schema/auth/auth';
+import { LoginVerificationCredentials, RegisterVerificationCredentials } from '@schema/auth/auth';
 
 /* 注册 */
-router.post('/register', authController.register);
+router.post('/register', RegisterVerificationCredentials, authController.register);
+
+/* 获取验证码 */
+router.post('/mailer', authController.sendMail)
 
 /* 登录 */
 router.post('/login', LoginVerificationCredentials, authController.login);

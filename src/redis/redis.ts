@@ -14,7 +14,8 @@ class RedisClient {
         this.redisClient = new Redis({
             host,
             port,
-            enableOfflineQueue: false, // 可选配置
+            enableOfflineQueue: false, // 禁用离线队列
+            maxRetriesPerRequest: null, // 禁用重试机制
         });
 
         // 监听 Redis 客户端的各个事件
