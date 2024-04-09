@@ -26,7 +26,7 @@ const rateLimiterRedisReports = new RateLimiterRedis({
 });
 
 // 报告请求频率限制
-const allowedPaths = ['/report', '/data', '/analysis'];
+const allowedPaths = process.env.NODE_REPORT_REQUEST_LIMITS?process.env.NODE_REPORT_REQUEST_LIMITS.split(','):[''];
 
 const HttpLimiterMiddleware = (req: Request, res: Response, next: NextFunction) => {
     // 根据情况选择使用用户ID还是IP地址作为速率限制的键
