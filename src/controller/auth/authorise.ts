@@ -6,11 +6,22 @@ import {generateHash, comparePassword} from '@utils/bcrypt';
 
 const authorise = async (account: string, password: string) => {
   try {
-    const user = await connection.getRepository(User).findOne({
-      where: {
-        user_account: account,
-      },
-    });
+    // 创建用户实例信息
+    let user;
+    // 检测是否是邮箱，或者账号
+    if(account.includes("@")) {
+      user = await connection.getRepository(User).findOne({
+        where: {
+          user_email: account,
+        },
+      });
+    }else {
+      user = await connection.getRepository(User).findOne({
+        where: {
+          user_account: account,
+        },
+      });
+    }
 
     if (user) {
       // 如果找到了用户，可以进行密码哈希验证
@@ -37,13 +48,14 @@ const authorise = async (account: string, password: string) => {
             message: "生成会话错误",
           };
         }
+        // 所有处理无误后返回token信息
         return {
           isLoggedIn: true,
           exists: true,
           token: token, // 将token对象返回
         };
       } else {
-        // 密码不匹配
+        // resultComparePassword为false时，密码不匹配
         return {
           isLoggedIn: false,
           exists: true,
@@ -51,7 +63,7 @@ const authorise = async (account: string, password: string) => {
         };
       }
     } else {
-      // 用户不存在
+      // user为空时，用户不存在
       return {
         isLoggedIn: false,
         exists: false,
