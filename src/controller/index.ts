@@ -5,7 +5,6 @@ class IndexController {
 	// 测试
 	test = async (req: Request, res: Response) => {
 		//获取解析的token信息
-		console.log('req :>> ', (req as any).user);
 		(res as any).AjaxResult.success(200,(req as any).user)
 	};
 }

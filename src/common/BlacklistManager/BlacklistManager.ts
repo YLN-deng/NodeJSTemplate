@@ -2,6 +2,8 @@ import createError from "http-errors";
 import jwt from "jsonwebtoken";
 import memjs, { Client } from "memjs";
 import { Request, Response, NextFunction } from "express";
+import crypto from 'crypto';
+import logger from "@utils/logger";
 
 // 黑名单管理器类，用于管理 Memcached 中的黑名单
 class BlacklistManager {
@@ -12,6 +14,18 @@ class BlacklistManager {
   private constructor() {
     this.memcachedClient = memjs.Client.create(process.env.NODE_MEMCACHED); // 连接到本地的 Memcached 服务器
   }
+
+  /**
+   * 使用哈希函数对 key 进行哈希处理
+   * @param key 
+   * @returns 
+  */
+  private hashKey(key: string): string {
+    const hash = crypto.createHash('sha256');
+    hash.update(key);
+    return hash.digest('hex'); // 返回哈希值的十六进制表示形式
+  }
+  
 
   // 获取 BlacklistManager 类的唯一实例
   public static getInstance(): BlacklistManager {
@@ -102,7 +116,8 @@ class BlacklistManager {
    */
   public async isTokenRevoked(token: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      this.memcachedClient.get(token, (err, value) => {
+      const hashedKey = this.hashKey(token); // 使用哈希函数生成哈希值作为 key
+      this.memcachedClient.get(hashedKey, (err, value) => {
         if (err) {
           reject(err); // 如果 Memcached 出错，返回 Promise.reject
         } else {
@@ -117,10 +132,18 @@ class BlacklistManager {
    * @param token 
    */
   public async revokeToken(token: string): Promise<void> {
-    // 将过期时间转换为秒
-    const expiresInSeconds = 7 * 24 * 60 * 60; // 7天的秒数
-    // 设置 token 到黑名单中，并指定过期时间
-    await this.memcachedClient.set(token, "revoked", { expires: expiresInSeconds });
+    try {
+      const hashedKey = this.hashKey(token); // 使用哈希函数生成哈希值作为 key
+      // 将过期时间转换为秒
+      const expiresInSeconds = 7 * 24 * 60 * 60; // 7天的秒数
+      // 设置 token 到黑名单中，并指定过期时间
+      await this.memcachedClient.set(hashedKey, "revoked", { expires: expiresInSeconds });
+    } catch (error) {
+      // 记录异常
+      logger.error("将指定 token 加入黑名单时发生错误:", error);
+      // 抛出捕获到的异常
+      throw error;
+    }
   }
 }
 

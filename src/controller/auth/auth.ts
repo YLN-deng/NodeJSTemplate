@@ -29,7 +29,7 @@ class AuthController {
         return (res as any).AjaxResult.bizFail(400,"验证码错误");
       }
 
-      // 再邮箱地址中获取账号
+      // 在邮箱地址中获取账号
       const account = email.split("@")[0];
       // 生成哈希密码
       const hashPassword = await generateHash(password);
@@ -96,7 +96,7 @@ class AuthController {
         .then(() => {
           (res as any).AjaxResult.success(200); // 返回成功状态码
         })
-        .catch(() => {
+        .catch((err) => {
           (res as any).AjaxResult.fail(500); // 如果 Memcached 发生错误，返回 500 错误
         });
     } else {
