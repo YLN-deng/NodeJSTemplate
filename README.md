@@ -60,6 +60,8 @@ npm run start
 
 **技术栈概览及功能说明**
 
+* 封装统一 Http 返回
+
 * 通过 jwt 生成 Token , Memcached 管理 Token 黑名单
 
 * Redis 根据用户 ID 和 客户端 IP 地址进行登录限流
