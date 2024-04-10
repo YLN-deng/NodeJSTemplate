@@ -73,8 +73,12 @@ const loginRoute = async (req:Request, res:Response,next:NextFunction) => {
     res.set('Retry-After', String(retrySecs));
     return next(createError(429,`请${Math.ceil(retrySecs/60)}分钟后再试`));
   } else {
-    const user = await authorise(req.body.account, req.body.password); // should be implemented in your project
-    if (!user.isLoggedIn) {//用户账号密码错误
+    const user = await authorise(req); // 验证用户信息
+    // 如果验证码错误，则直接返回
+    if(!user.codeError) return next(createError(400,user.message));
+
+    //用户账号密码错误
+    if (!user.isLoggedIn) {
       // 错误尝试时从限制器中消耗 1 点，如果达到限制则阻止
       try {
         const promises = [limiterSlowBruteByIP.consume(ipAddr)];

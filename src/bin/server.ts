@@ -95,5 +95,5 @@ function onListening() {
     : 'port ' + addr!.port;
 
   // 显示服务端口
-  logger.debug(`服务已启动 :>> ${bind}`);
+  logger.error(`服务已启动 :>> ${bind}`);
 }

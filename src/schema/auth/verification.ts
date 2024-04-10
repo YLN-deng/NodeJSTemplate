@@ -5,10 +5,8 @@ import {
     MinLength,
     MaxLength,
     IsString,
-    Matches,
     IsEmail,
-    Length,
-    Equals
+    Length
 } from 'class-validator';
 
 // 账号登录验证类
@@ -26,6 +24,12 @@ export class AuthAccount {
     @IsNotEmpty({ message: "密码不能为空" })
     @IsAlphanumeric(undefined, {message:"密码仅包含字母和数字"})
     user_password!: string;
+
+    @IsString()
+    @IsAlphanumeric(undefined, {message:"密码仅包含字母和数字"})                   
+    @Length(4, 4, { message: "验证码只能是4位" })                         // 检查字符串的长度是否在某个范围内。
+    @IsNotEmpty({ message: "验证码不能为空" })
+    user_code!: string;
 }
 
 // 邮箱登录验证类
@@ -41,6 +45,12 @@ export class AuthEmail {
     @IsNotEmpty({ message: "密码不能为空" })
     @IsAlphanumeric(undefined, {message:"密码仅包含字母和数字"})
     user_password!: string;
+
+    @IsString()
+    @IsAlphanumeric(undefined, {message:"密码仅包含字母和数字"})                   
+    @Length(4, 4, { message: "验证码只能是4位" })                         // 检查字符串的长度是否在某个范围内。
+    @IsNotEmpty({ message: "验证码不能为空" })
+    user_code!: string;
 }
 
 // 注册验证类

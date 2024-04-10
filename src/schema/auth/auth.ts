@@ -29,7 +29,7 @@ const formatValidationError = (error: ValidationError) => {
 // 账号密码验证中间件
 export const LoginVerificationCredentials = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { account, password } = req.body;
+    const { account, password, code } = req.body;
 
     let authData: any;
     // 判断传入的账号字段是否包含 @ 符号，如果包含则使用邮箱验证，否则使用账号验证
@@ -41,6 +41,7 @@ export const LoginVerificationCredentials = async (req: Request, res: Response, 
       authData.user_account = account; // 设置 user_account 属性
     }
 
+    authData.user_code = code;         // 设置 user_code 属性
     authData.user_password = password; // 设置 user_password 属性
 
     // 使用 class-validator 验证登录数据

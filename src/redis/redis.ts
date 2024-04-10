@@ -20,32 +20,32 @@ class RedisClient {
 
         // 监听 Redis 客户端的各个事件
         this.redisClient.on('ready', () => {
-            logger.error('Redis 客户端：已准备就绪');
+            logger.debug('Redis 客户端：已准备就绪');
         });
         
         this.redisClient.on('connect', () => {
-            logger.error('Redis 已连接！');
+            logger.debug('Redis 已连接！');
         });
         
         this.redisClient.on('reconnecting', (...args: any[]) => {
-            logger.error('Redis 正在重新连接', args);
+            logger.debug('Redis 正在重新连接', args);
         });
         
         this.redisClient.on('end', () => {
-            logger.error('Redis 已关闭！');
+            logger.debug('Redis 已关闭！');
         });
         
         this.redisClient.on('warning', (...args: any[]) => {
-            logger.error('Redis 客户端警告', args);
+            logger.debug('Redis 客户端警告', args);
         });
         
         this.redisClient.on('error', (err: any) => {
-            logger.error('Redis 错误：' + err);
+            logger.debug('Redis 错误：' + err);
         });
         
         // 检查是否连接到 Redis
         if (this.redisClient.status === 'ready') {
-            logger.error('Redis 现已连接！');
+            logger.debug('Redis 现已连接！');
         }        
     }
 

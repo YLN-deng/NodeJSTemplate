@@ -1,11 +1,39 @@
+import { Request } from 'express';
 import { blacklistManager } from "@common/BlacklistManager/BlacklistManager";
 import { User } from "@models/User";
 import connection from "@database/index";
 import logger from "@utils/logger";
-import {generateHash, comparePassword} from '@utils/bcrypt';
+import {comparePassword} from '@utils/bcrypt';
 
-const authorise = async (account: string, password: string) => {
+const authorise = async (req:Request) => {
   try {
+    const account = req.body.account;
+    const password = req.body.password;
+    const code = req.body.code.toLowerCase(); // 将用户输入的验证码转换为小写
+    const savedCaptcha = (req as any).session.captcha || ''; // 从 session 中获取保存的验证码并转换为小写
+
+    // 验证验证码是否在3分钟内有效
+    if(Date.now() - savedCaptcha.timestamp > 180000) {
+      return {
+        codeError: false,
+        message: "验证码已失效",
+        isLoggedIn: false,
+        exists: false,
+        token: "",
+      }
+    }
+
+    // 如果验证码错误则返回错误信息
+    if (!(savedCaptcha && code === savedCaptcha.text.toLowerCase())) {
+      return {
+        codeError: false,
+        message: "验证码错误",
+        isLoggedIn: false,
+        exists: false,
+        token: "",
+      }
+    }
+
     // 创建用户实例信息
     let user;
     // 检测是否是邮箱，或者账号
@@ -40,16 +68,22 @@ const authorise = async (account: string, password: string) => {
           user_email: user.user_email,
         };
         // 生成 token
-        const token = await blacklistManager.generateJWT( payload, secretKey, "1h" );
+        const token = await blacklistManager.generateJWT( payload, secretKey, process.env.NODE_EXPIRESIN?process.env.NODE_EXPIRESIN:"1h" );
         if (!token) {
           return {
+            codeError: true,
             isLoggedIn: false,
             exists: true,
             message: "生成会话错误",
           };
         }
+
+        // 验证成功，删除保存的验证码信息
+        delete (req as any).session.captcha;
+
         // 所有处理无误后返回token信息
         return {
+          codeError: true,
           isLoggedIn: true,
           exists: true,
           token: token, // 将token对象返回
@@ -57,6 +91,7 @@ const authorise = async (account: string, password: string) => {
       } else {
         // resultComparePassword为false时，密码不匹配
         return {
+          codeError: true,
           isLoggedIn: false,
           exists: true,
           message: "密码错误",
@@ -65,6 +100,7 @@ const authorise = async (account: string, password: string) => {
     } else {
       // user为空时，用户不存在
       return {
+        codeError: true,
         isLoggedIn: false,
         exists: false,
         message: "用户不存在",
@@ -74,9 +110,10 @@ const authorise = async (account: string, password: string) => {
     // 处理数据库查询错误
     logger.error("数据库查询错误:", error);
     return {
+      codeError: true,
       isLoggedIn: false,
       exists: false,
-      message: error,
+      message: error.message || "未知错误",
     };
   }
 };

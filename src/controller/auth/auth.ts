@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import svgCaptcha from 'svg-captcha';
 import { blacklistManager } from "@common/BlacklistManager/BlacklistManager";
 
 import { loginRoute } from "@common/LimiterMiddleware/LoginLimiter";
@@ -81,6 +82,33 @@ class AuthController {
       (res as any).AjaxResult.fail(500);
     }
   };
+  
+
+  /**
+   * 生成验证码
+   * @param req 
+   * @param res 
+   */
+  captcha = async (req: Request, res: Response) => {
+    const captcha = svgCaptcha.create({
+      size: 4,  // 验证码长度
+      ignoreChars: '0o1il',  // 忽略的字符
+      noise: 6,  // 干扰线条的数量
+      color: true,  // 随机颜色
+      background: '#f0f0f0'  // 背景色
+    });
+    
+    // 将验证码文本保存到 session 中，用于验证
+    (req as any).session.captcha = {
+      text: captcha.text,
+      timestamp: Date.now()
+    };
+
+    // 设置响应类型为 SVG
+    res.type('svg');
+    // 发送验证码图片
+    res.send(captcha.data);
+  }
 
   /**
    * 退出登录
@@ -96,7 +124,7 @@ class AuthController {
         .then(() => {
           (res as any).AjaxResult.success(200); // 返回成功状态码
         })
-        .catch((err) => {
+        .catch(() => {
           (res as any).AjaxResult.fail(500); // 如果 Memcached 发生错误，返回 500 错误
         });
     } else {

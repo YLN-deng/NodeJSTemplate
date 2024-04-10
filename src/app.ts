@@ -1,16 +1,19 @@
 import createError from 'http-errors'
 import express from 'express';
+import session from 'express-session';
 import { Request, Response, NextFunction } from 'express';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import requestIp from 'request-ip';
 import bodyParser from 'body-parser';
+import cors from "cors";
 
 import dotenv from "dotenv";
 dotenv.config({ path: ".env." + process.env.NODE_ENV });
 
 const app = express();
 
+import { corsOptions } from '@utils/cors';
 import {blacklistManager} from '@common/BlacklistManager/BlacklistManager';
 import ajaxResultMiddleware from '@common/Result/AjaxResult';
 import IpLimiterMiddleware from '@common/LimiterMiddleware/IPLimiter';
@@ -21,6 +24,11 @@ import authRouter from './routes/auth';
 import usersRouter from './routes/users';
 
 /**
+ * 允许跨域请求
+ */
+app.use(cors(corsOptions()));
+
+/**
  * 获取客户端IP地址的中间件
  */
 app.use(requestIp.mw());
@@ -29,6 +37,15 @@ app.use(requestIp.mw());
  * logger('dev') 中间件，它是 Morgan 模块提供的一个预定义日志格式，可以在控制台中打印出请求日志，便于开发时查看请求信息。
  */
 app.use(logger('dev'));
+
+/**
+ * 使用 session 中间件
+ */
+app.use(session({
+  secret: 'ogcfun',         // 用于加密 session 的密钥
+  resave: false,            // 是否在每次请求时重新保存会话
+  saveUninitialized: false   // 是否在会话数据中包含“未初始化”的会话
+}));
 
 /**
  * 将 Express 应用程序配置为使用内置的中间件来解析 JSON 格式的请求体数据。

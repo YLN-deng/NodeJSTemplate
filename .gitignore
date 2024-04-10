@@ -22,9 +22,9 @@ coverage
 # API keys and secrets
 .env
 .env.development
-.env.production
 
 # Dependency directory
+dist
 node_modules
 bower_components
 

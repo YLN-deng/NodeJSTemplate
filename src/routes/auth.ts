@@ -9,11 +9,14 @@ import { LoginVerificationCredentials, RegisterVerificationCredentials } from '@
 /* 注册 */
 router.post('/register', RegisterVerificationCredentials, authController.register);
 
-/* 获取验证码 */
-router.post('/mailer', authController.sendMail)
+/* 注册邮箱验证码 */
+router.get('/mailer', authController.sendMail)
 
 /* 登录 */
 router.post('/login', LoginVerificationCredentials, authController.login);
+
+/* 登录验证码 */
+router.get('/captcha', authController.captcha);
 
 /* 退出 */
 router.post('/logout', authController.logout);

@@ -1,5 +1,4 @@
 import { Request, Response } from "express"
-import logger from "@utils/logger";
 
 class IndexController {
 	// 测试

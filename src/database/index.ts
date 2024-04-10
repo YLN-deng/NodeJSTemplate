@@ -31,7 +31,7 @@ const connection = new DataSource({
 connection
   .initialize()
   .then(() => {
-    logger.error("数据源已初始化！");
+    logger.debug("数据源已初始化！");
   })
   .catch((err) => {
     logger.error("数据源初始化期间出错：", err);
