@@ -13,8 +13,6 @@
 
 **安装运行**
 
-  
-
 ```
 
 npm install
@@ -23,16 +21,11 @@ npm install
 
 npm run dev
 
-  
-
 ```
 
-  
 
 **打包运行**
-
   
-
 ```
 
 npm run build
@@ -46,12 +39,9 @@ npm run start
   
 
 ***
-
   
 
 **运行项目环境**
-
-  
 
 [安装 Node](https://blog.csdn.net/shi15926lei/article/details/134962893)
 
@@ -104,9 +94,7 @@ npm run start
 
 
 **配置文件**
-
   
-
 ```
 
 # 运行环境
@@ -207,10 +195,6 @@ NODE_QQEMAIL_CODE = ""
 
 NODE_EMAIL_QUEUE = 10
 
-  
-
 ```
-
-  
 
 ***
