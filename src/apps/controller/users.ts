@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import logger from "@utils/logger";
 
-import { User } from "@models/User";
+import { User } from "apps/models/User";
 import connection from "@database/index";
 
 class UsersController {

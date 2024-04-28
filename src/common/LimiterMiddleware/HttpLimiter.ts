@@ -53,7 +53,7 @@ const HttpLimiterMiddleware = (req: Request, res: Response, next: NextFunction) 
             .catch(_ => {
                 next(createError(429,"请求过于频繁")) 
             });
-    };
+    }
 }
 
 // 导出接口请求限流器中间件的函数

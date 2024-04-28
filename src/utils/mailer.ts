@@ -1,7 +1,7 @@
 import createError from "http-errors";
 import { Request, Response, NextFunction } from "express";
 import nodemailer, { Transporter } from 'nodemailer';
-import Queue, { JobOptions, QueueOptions } from 'bull';
+import Queue, { QueueOptions } from 'bull';
 import logger from './logger';
 import { RateLimiterRedis } from 'rate-limiter-flexible';
 import { redisInstance } from '@redis/redis';
@@ -55,7 +55,7 @@ emailQueue.process(async (job) => {
     const { receiverEmail, subject, html } = job.data;
     try {
         // 邮件选项
-        let mailOptions = {
+        const mailOptions = {
             from: `"ogcfun" <${process.env.NODE_QQEMAIL_USER || ''}>`,
             to: receiverEmail,
             subject: subject,
@@ -117,15 +117,18 @@ export const sendEmail = async (req: Request, res: Response, next: NextFunction)
             const html: string = generateEmailHTML(verificationCode);
 
             // 添加发送邮件任务到队列中
-            await emailQueue.add({ receiverEmail, subject, html });
+            const job = await emailQueue.add({ receiverEmail, subject, html });
+            
+            // 等待任务完成，并接收返回值
+            await job.finished();
 
             // 响应http
             return (res as any).AjaxResult.success(200, verificationCode);
         }
     } catch (error: any) {
         if (error instanceof Error) {
-            logger.error("添加发送邮件任务到队列时出错：", error);
-            throw error;
+            logger.error('发送邮件时出错：', error);
+            return next(createError(500, '发送邮件失败'));
         } else {
             res.set('Retry-After', String(Math.round(error.msBeforeNext / 1000)) || '1');
             return next(createError(429, `请在 ${Math.ceil(Math.round(error.msBeforeNext / 1000))} 秒后重新发送`));

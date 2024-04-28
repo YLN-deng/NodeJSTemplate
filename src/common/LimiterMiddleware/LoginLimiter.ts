@@ -4,7 +4,7 @@ import { RateLimiterRedis } from 'rate-limiter-flexible';
 import { redisInstance } from '@redis/redis';
 import requestIp from 'request-ip';
 import logger from '../../utils/logger';
-import { authorise } from '@controller/auth/authorise';
+import { authSchema } from 'apps/server/auth';
 
 const maxWrongAttemptsByIPperDay = process.env.NODE_LOGIN_NUMBER_OF_ERRORS_IP?Number(process.env.NODE_LOGIN_NUMBER_OF_ERRORS_IP):100; //IP 每日最大错误尝试次数
 const maxConsecutiveFailsByUsernameAndIP = process.env.NODE_LOGIN_NUMBER_OF_ERRORS_USER_IP?Number(process.env.NODE_LOGIN_NUMBER_OF_ERRORS_USER_IP):10; //按用户名和 IP 划分的最大连续失败数
@@ -43,7 +43,12 @@ const getUsernameIPkey = (username:string, ip:string) => `${username}_${ip}`;
  * @returns 
  */
 const loginRoute = async (req:Request, res:Response,next:NextFunction) => {
-  const ipAddr = requestIp.getClientIp(req) || '127.0.0.1'; //获取客户端的 IP 地址
+  const ipAddr = requestIp.getClientIp(req) || ''; //获取客户端的 IP 地址
+
+  if(ipAddr === '') {
+    return next(createError(400,"登录环境异常"));
+  }
+
   const usernameIPkey = getUsernameIPkey(req.body.account, ipAddr); //生成一个唯一的键值
 
   /**
@@ -73,7 +78,7 @@ const loginRoute = async (req:Request, res:Response,next:NextFunction) => {
     res.set('Retry-After', String(retrySecs));
     return next(createError(429,`请${Math.ceil(retrySecs/60)}分钟后再试`));
   } else {
-    const user = await authorise(req); // 验证用户信息
+    const user = await authSchema(req); // 验证用户信息
     // 如果验证码错误，则直接返回
     if(!user.codeError) return next(createError(400,user.message));
 

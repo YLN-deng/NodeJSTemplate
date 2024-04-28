@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import BaseResult from '@common/Result/BaseResult';
+import BaseResult from '@common/HttpResult/BaseResult';
 
 const ajaxResultMiddleware = (req: Request, res: Response, next: NextFunction) => {
   (res as any).AjaxResult = {

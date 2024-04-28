@@ -7,6 +7,7 @@ import logger from 'morgan';
 import requestIp from 'request-ip';
 import bodyParser from 'body-parser';
 import cors from "cors";
+import "reflect-metadata"
 
 import dotenv from "dotenv";
 dotenv.config({ path: ".env." + process.env.NODE_ENV });
@@ -15,13 +16,13 @@ const app = express();
 
 import { corsOptions } from '@utils/cors';
 import {blacklistManager} from '@common/BlacklistManager/BlacklistManager';
-import ajaxResultMiddleware from '@common/Result/AjaxResult';
+import ajaxResultMiddleware from '@common/HttpResult/AjaxResult';
 import IpLimiterMiddleware from '@common/LimiterMiddleware/IPLimiter';
 import HttpLimiterMiddleware from '@common/LimiterMiddleware/HttpLimiter';
 
-import indexRouter from './routes/index';
-import authRouter from './routes/auth';
-import usersRouter from './routes/users';
+import indexRouter from './apps/routes/index';
+import authRouter from './apps/routes/auth';
+import usersRouter from './apps/routes/users';
 
 /**
  * 允许跨域请求

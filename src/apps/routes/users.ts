@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router();
 
-import { usersController } from "@controller/users";
+import { usersController } from "apps/controller/users";
 
 /* register routes */
 router.get('/list', usersController.getUserList);

@@ -1,6 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 import {
-  IsByteLength,
   IsNotEmpty,
   IsString,
   IsInt,
@@ -8,7 +7,6 @@ import {
   IsEmail,
   MinLength,
   MaxLength,
-  Matches
 } from 'class-validator';
 
 @Entity()

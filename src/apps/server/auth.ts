@@ -1,11 +1,11 @@
 import { Request } from 'express';
 import { blacklistManager } from "@common/BlacklistManager/BlacklistManager";
-import { User } from "@models/User";
+import { User } from "apps/models/User";
 import connection from "@database/index";
 import logger from "@utils/logger";
 import {comparePassword} from '@utils/bcrypt';
 
-const authorise = async (req:Request) => {
+const authSchema = async (req:Request) => {
   try {
     const account = req.body.account;
     const password = req.body.password;
@@ -118,4 +118,4 @@ const authorise = async (req:Request) => {
   }
 };
 
-export { authorise };
+export { authSchema };

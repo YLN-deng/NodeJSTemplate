@@ -4,7 +4,7 @@ import { blacklistManager } from "@common/BlacklistManager/BlacklistManager";
 
 import { loginRoute } from "@common/LimiterMiddleware/LoginLimiter";
 
-import { User } from "@models/User";
+import { User } from "apps/models/User";
 import connection from "@database/index";
 import logger from "@utils/logger";
 import {generateHash} from '@utils/bcrypt';

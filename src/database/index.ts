@@ -22,7 +22,7 @@ const connection = new DataSource({
   username: username,
   password: password,
   database: database,
-  entities: ["src/models/*.ts"],
+  entities: ["src/apps/models/*.ts"],
   logging: true, //启用日志记录
   synchronize: false, //自动创建数据库架构
   isolateWhereStatements:true //启用 where 语句隔离
