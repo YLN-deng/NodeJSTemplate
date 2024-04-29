@@ -5,6 +5,11 @@ import connection from "@database/index";
 import logger from "@utils/logger";
 import {comparePassword} from '@utils/bcrypt';
 
+/**
+ * 登录验证
+ * @param req 
+ * @returns 
+ */
 const authSchema = async (req:Request) => {
   try {
     const account = req.body.account;
