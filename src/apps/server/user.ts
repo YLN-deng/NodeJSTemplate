@@ -8,7 +8,7 @@ import connection from "@database/index";
  * @param res 
  * @returns 用户信息
  */
-const getUserListServer = async (req: Request, res: Response) => {
+const getUserListService = async (req: Request, res: Response) => {
   const users = await connection.getRepository(User).find();
   return (res as any).AjaxResult.success(200, users);
 };
@@ -19,7 +19,7 @@ const getUserListServer = async (req: Request, res: Response) => {
  * @param res 
  * @returns 用户信息
  */
-const getUserIDServer = async (req: Request, res: Response) => {
+const getUserIDService = async (req: Request, res: Response) => {
     const { id } = req.params; 
       
     // 获取用户信息
@@ -43,7 +43,7 @@ const getUserIDServer = async (req: Request, res: Response) => {
  * @param res 
  * @returns 更新后用户信息
  */
-const updateUserServer = async (req: Request, res: Response) => {
+const updateUserService = async (req: Request, res: Response) => {
     const { id } = req.params; 
 
     // 获取要更新的用户信息
@@ -72,7 +72,7 @@ const updateUserServer = async (req: Request, res: Response) => {
  * @param res 
  * @returns 
  */
-const deleteUserServer = async (req: Request, res: Response) => {
+const deleteUserService = async (req: Request, res: Response) => {
     const { id } = req.params; 
     
     // 检查用户是否存在
@@ -87,8 +87,8 @@ const deleteUserServer = async (req: Request, res: Response) => {
 }
 
 export {
-  getUserListServer,
-  getUserIDServer,
-  updateUserServer,
-  deleteUserServer
+  getUserListService,
+  getUserIDService,
+  updateUserService,
+  deleteUserService
 }

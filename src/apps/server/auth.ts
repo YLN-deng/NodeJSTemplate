@@ -140,7 +140,7 @@ const authSchema = async (req: Request) => {
  * @param res
  * @returns
  */
-const registerServer = async (req: Request, res: Response) => {
+const registerService = async (req: Request, res: Response) => {
   // 要保存的用户信息
   const { email, code, password } = req.body;
   // 从redis中获取请求的邮箱验证码
@@ -177,7 +177,7 @@ const registerServer = async (req: Request, res: Response) => {
  * @param req
  * @param res
  */
-const captchaServer = (req: Request, res: Response) => {
+const captchaService = (req: Request, res: Response) => {
   const captcha = svgCaptcha.create({
     size: 4, // 验证码长度
     ignoreChars: "0o1il", // 忽略的字符
@@ -203,7 +203,7 @@ const captchaServer = (req: Request, res: Response) => {
  * @param req
  * @param res
  */
-const logoutServer = (req: Request, res: Response) => {
+const logoutService = (req: Request, res: Response) => {
   const token = req.headers.authorization; // 获取 token
   if (token) {
     // 将 token 加入黑名单
@@ -220,4 +220,4 @@ const logoutServer = (req: Request, res: Response) => {
   }
 };
 
-export { authSchema, registerServer, captchaServer, logoutServer };
+export { authSchema, registerService, captchaService, logoutService };

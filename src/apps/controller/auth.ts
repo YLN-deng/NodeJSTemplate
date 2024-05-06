@@ -3,7 +3,7 @@ import logger from "@utils/logger";
 
 import { loginRoute } from "@common/LimiterMiddleware/LoginLimiter";
 import {sendEmail} from '@utils/mailer';
-import { registerServer, captchaServer, logoutServer } from '@apps/server/auth';
+import { registerService, captchaService, logoutService } from '@apps/server/auth';
 
 class AuthController {
   /**
@@ -13,7 +13,7 @@ class AuthController {
    */
   register = async (req: Request, res: Response) => {
     try {
-      await registerServer(req, res);
+      await registerService(req, res);
     } catch (error) {
       logger.error("注册用户时出错:", error);
       (res as any).AjaxResult.fail(500);
@@ -54,7 +54,7 @@ class AuthController {
    */
   captcha = async (req: Request, res: Response) => {
     try {
-      captchaServer(req, res);
+      captchaService(req, res);
     } catch (error) {
       logger.error("生成验证码错误:", error);
       (res as any).AjaxResult.fail(500);
@@ -68,7 +68,7 @@ class AuthController {
    */
   logout = async (req: Request, res: Response) => {
     try {
-      logoutServer(req, res);
+      logoutService(req, res);
     } catch (error) {
       logger.error("退出登录错误:", error);
       (res as any).AjaxResult.fail(500);

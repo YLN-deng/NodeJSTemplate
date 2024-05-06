@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import logger from "@utils/logger";
 
-import {getUserListServer, getUserIDServer, updateUserServer, deleteUserServer} from '@apps/server/user';
+import {getUserListService, getUserIDService, updateUserService, deleteUserService} from '@apps/server/user';
 
 class UsersController {
   /**
@@ -12,7 +12,7 @@ class UsersController {
    */
   getUserList = async (req: Request, res: Response) => {
     try {
-      await getUserListServer(req, res);
+      await getUserListService(req, res);
     } catch (error) {
       logger.error("获取用户时发生错误：", error);
       return (res as any).AjaxResult.fail(500);
@@ -27,7 +27,7 @@ class UsersController {
    */
   getUserID = async (req: Request, res: Response) => {
     try {
-      await getUserIDServer(req, res);
+      await getUserIDService(req, res);
     } catch (error) {
       logger.error("查询单个用户 ID 时发生错误:", error);
       return (res as any).AjaxResult.fail(500);
@@ -42,7 +42,7 @@ class UsersController {
    */
   updateUser = async (req: Request, res: Response) => {
     try {
-      await updateUserServer(req, res);
+      await updateUserService(req, res);
     } catch (error) {
       logger.error("更新用户信息时发生错误：", error);
       return (res as any).AjaxResult.fail(500);
@@ -57,7 +57,7 @@ class UsersController {
    */
   deleteUser = async (req: Request, res: Response) => {
     try {
-      await deleteUserServer(req, res)
+      await deleteUserService(req, res)
     } catch (error) {
       logger.error("删除用户时发生错误:", error);
       return (res as any).AjaxResult.fail(500);
