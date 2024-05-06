@@ -4,7 +4,7 @@ const router = express.Router();
 import { authController } from 'apps/controller/auth';
 
 // 导入需要的验证规则对象
-import { LoginVerificationCredentials, RegisterVerificationCredentials } from 'apps/schema/auth';
+import { LoginVerificationCredentials, RegisterVerificationCredentials } from '@apps/models/auth';
 
 /* 注册 */
 router.post('/register', RegisterVerificationCredentials, authController.register);

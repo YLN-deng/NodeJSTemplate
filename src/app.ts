@@ -20,7 +20,6 @@ import ajaxResultMiddleware from '@common/HttpResult/AjaxResult';
 import IpLimiterMiddleware from '@common/LimiterMiddleware/IPLimiter';
 import HttpLimiterMiddleware from '@common/LimiterMiddleware/HttpLimiter';
 
-import indexRouter from './apps/routes/index';
 import authRouter from './apps/routes/auth';
 import usersRouter from './apps/routes/users';
 
@@ -95,7 +94,6 @@ app.use(HttpLimiterMiddleware);
 /**
  * 路由配置
  */
-app.use('/', indexRouter);
 app.use('/auth', authRouter);
 app.use('/users',usersRouter);
 

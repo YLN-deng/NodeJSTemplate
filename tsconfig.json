@@ -43,7 +43,8 @@
       "@schema/*": ["schema/*"],
       "@utils/*": ["utils/*"],
       "@types/*": ["types/*"],
-      "@redis/*": ["redis/*"]
+      "@redis/*": ["redis/*"],
+      "@apps/*": ["apps/*"]
     }
   },
   "include": [ 

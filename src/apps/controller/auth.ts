@@ -1,15 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import svgCaptcha from 'svg-captcha';
-import { blacklistManager } from "@common/BlacklistManager/BlacklistManager";
+import logger from "@utils/logger";
 
 import { loginRoute } from "@common/LimiterMiddleware/LoginLimiter";
-
-import { User } from "apps/models/User";
-import connection from "@database/index";
-import logger from "@utils/logger";
-import {generateHash} from '@utils/bcrypt';
 import {sendEmail} from '@utils/mailer';
-import { redisInstance } from '@redis/redis';
+import { registerServer, captchaServer, logoutServer } from '@apps/server/auth';
 
 class AuthController {
   /**
@@ -18,41 +12,11 @@ class AuthController {
    * @param res
    */
   register = async (req: Request, res: Response) => {
-    // 要保存的用户信息
-    const { email, code, password } = req.body;
-
     try {
-      // 从redis中获取请求的邮箱验证码
-      const redisCode = await redisInstance.get(email);
-
-      // 判断redis的验证码是否与输入的验证码相同
-      if(code !== redisCode) {
-        return (res as any).AjaxResult.bizFail(400,"验证码错误");
-      }
-
-      // 在邮箱地址中获取账号
-      const account = email.split("@")[0];
-      // 生成哈希密码
-      const hashPassword = await generateHash(password);
-
-      // 写入数据库
-      // 创建一个新的User实体
-      const newUser = new User();
-      newUser.user_name = account;
-      newUser.user_account = account;
-      newUser.user_email = email;
-      newUser.user_password = hashPassword;
-
-      // 将新用户保存到数据库
-      const userRepository = connection.getRepository(User).create(newUser);
-      const result = connection.getRepository(User).save(userRepository);
-
-      // 返回成功响应
-      return (res as any).AjaxResult.success(200,result);
+      await registerServer(req, res);
     } catch (error) {
-      // 如果保存用户时出现错误，则返回错误响应
       logger.error("注册用户时出错:", error);
-      return (res as any).AjaxResult.fail(500);
+      (res as any).AjaxResult.fail(500);
     }
   };
 
@@ -82,7 +46,6 @@ class AuthController {
       (res as any).AjaxResult.fail(500);
     }
   };
-  
 
   /**
    * 生成验证码
@@ -90,24 +53,12 @@ class AuthController {
    * @param res 
    */
   captcha = async (req: Request, res: Response) => {
-    const captcha = svgCaptcha.create({
-      size: 4,  // 验证码长度
-      ignoreChars: '0o1il',  // 忽略的字符
-      noise: 6,  // 干扰线条的数量
-      color: true,  // 随机颜色
-      background: '#f0f0f0'  // 背景色
-    });
-    
-    // 将验证码文本保存到 session 中，用于验证
-    (req as any).session.captcha = {
-      text: captcha.text,
-      timestamp: Date.now()
-    };
-
-    // 设置响应类型为 SVG
-    res.type('svg');
-    // 发送验证码图片
-    res.send(captcha.data);
+    try {
+      captchaServer(req, res);
+    } catch (error) {
+      logger.error("生成验证码错误:", error);
+      (res as any).AjaxResult.fail(500);
+    }
   }
 
   /**
@@ -116,19 +67,11 @@ class AuthController {
    * @param res
    */
   logout = async (req: Request, res: Response) => {
-    const token = req.headers.authorization; // 获取 token
-    if (token) {
-      // 将 token 加入黑名单
-      blacklistManager
-        .revokeToken(token)
-        .then(() => {
-          (res as any).AjaxResult.success(200); // 返回成功状态码
-        })
-        .catch(() => {
-          (res as any).AjaxResult.fail(500); // 如果 Memcached 发生错误，返回 500 错误
-        });
-    } else {
-      (res as any).AjaxResult.bizFail(401, "会话已失效"); // 如果没有提供 token，返回 401 错误
+    try {
+      logoutServer(req, res);
+    } catch (error) {
+      logger.error("退出登录错误:", error);
+      (res as any).AjaxResult.fail(500);
     }
   };
 }
